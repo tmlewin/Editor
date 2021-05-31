@@ -1,0 +1,29 @@
+// Notes var are used for global scope and functions... Values can be changed 
+
+Let can be changed  and are blocked scope
+
+Const aka constant have limiyted scope and are blocked. Values can't be changed 
+
+Template literals are used for string interpolation and expression embedding
+string interpolatrion can be used to construct a string with variables in a simple manner.
+
+embedded  expression calculations in astring
+
+ARROW functions
+ FORMAT and func =(param1, param2) =>{return param1}
+
+ ITRERATING OVER AND ARRAY functions
+ 1ST METHOD WE CAN  USE FOR OF LIKE  FORMAT AS FOLLOWS  for(let value of myArray){console.log(myArray);}
+ 2ND IS FOREACH LOOP FUNCTION 
+ myArray.ForEach((value)=>{console.log(value)
+ 
+ })
+ 3rd method is uysing Arrow functions iun es6+ by using mapping function
+
+ myArray.Map((value)=>{console.log(value)
+ 
+ })
+
+ 
+
+
