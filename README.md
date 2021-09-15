@@ -1,0 +1,3 @@
+# Editor
+
+A web based text editor with editing features. More features such as google docs integration and much more coming soon....
