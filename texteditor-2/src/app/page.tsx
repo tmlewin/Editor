@@ -42,6 +42,10 @@ import {
   Palette,
   Settings as SettingsIcon,
   Keyboard,
+  Trash2,
+  FileDown,
+  FileText as FileTextIcon,
+  FileCode,
 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Input } from "@/components/ui/input";
@@ -55,6 +59,17 @@ import {
 } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 // Update the document type to include content
 // Replace or update the mockDocuments with this type
@@ -141,6 +156,8 @@ export default function Home() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [autoSave, setAutoSave] = useState(false);
   const [autoSaveInterval, setAutoSaveInterval] = useState(30); // seconds
+  const [documentToDelete, setDocumentToDelete] = useState<Document | null>(null);
+  const [isExporting, setIsExporting] = useState(false);
 
   // Move these functions inside the component
   const handleEditorUpdate = () => {
@@ -500,6 +517,158 @@ export default function Home() {
     };
   }, [autoSave, autoSaveInterval]);
 
+  // Update the handleDeleteDocument function
+  const handleDeleteDocument = (doc: Document) => {
+    // Update state
+    const updatedDocs = documents.filter(d => d.id !== doc.id);
+    setDocuments(updatedDocs);
+    setDocumentToDelete(null);
+
+    // Update localStorage
+    localStorage.setItem('texteditor-documents', JSON.stringify(updatedDocs));
+
+    // If the deleted document was currently open, clear the editor
+    if (doc.id === documents.find(d => d.title === documentTitle)?.id) {
+      setContent("");
+      setDocumentTitle("Untitled Document");
+      if (editorRef.current) {
+        editorRef.current.innerHTML = "";
+      }
+    }
+  };
+
+  // Add export functions
+  const exportAsPDF = async () => {
+    if (!editorRef.current || isExporting) return;
+    
+    try {
+      // Set exporting state to show loading indicator
+      setIsExporting(true);
+      
+      // Get text content only
+      const textContent = editorRef.current.innerText || '';
+      
+      // Load jsPDF directly (not html2pdf)
+      const { jsPDF } = await import('jspdf');
+      
+      // Create a new PDF document
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4'
+      });
+      
+      // Add document title
+      pdf.setFontSize(24);
+      pdf.text(documentTitle, 20, 20);
+      
+      // Add a line under the title
+      pdf.setLineWidth(0.5);
+      pdf.line(20, 25, 190, 25);
+      
+      // Reset to normal font for content
+      pdf.setFontSize(12);
+      
+      // Split content into lines that fit on the page
+      const textLines = pdf.splitTextToSize(textContent, 170);
+      
+      // Add the text content with proper margins
+      // Start 15mm from the top (after the title)
+      pdf.text(textLines, 20, 35);
+      
+      // Save the PDF with the document title
+      pdf.save(`${documentTitle}.pdf`);
+      
+      console.log('PDF export completed successfully');
+    } catch (error) {
+      console.error('Error exporting to PDF:', error);
+      
+      // Fallback to plain text export if PDF generation fails
+      try {
+        const plainText = editorRef.current.innerText || '';
+        const blob = new Blob([plainText], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${documentTitle}.txt`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        alert('PDF export failed. Your document has been exported as plain text instead.');
+      } catch (fallbackError) {
+        alert('Failed to export document: ' + (error instanceof Error ? error.message : 'Unknown error'));
+      }
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const exportAsMarkdown = async () => {
+    try {
+      // Set exporting state to show loading indicator (reuse the same state used for PDF)
+      setIsExporting(true);
+      
+      // Properly import TurndownService using dynamic import
+      const TurndownService = (await import('turndown')).default;
+      const turndown = new TurndownService();
+      
+      // Convert HTML to Markdown
+      const markdown = turndown.turndown(content);
+      
+      // Create and download file
+      const blob = new Blob([markdown], { type: 'text/markdown' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${documentTitle}.md`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      console.log('Markdown export completed successfully');
+    } catch (error) {
+      console.error('Error exporting to Markdown:', error);
+      alert('Failed to export Markdown: ' + (error instanceof Error ? error.message : 'Unknown error'));
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const exportAsHTML = () => {
+    // Create a formatted HTML document
+    const htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>${documentTitle}</title>
+    <style>
+      body { font-family: system-ui, -apple-system, sans-serif; }
+      .content { max-width: 800px; margin: 2rem auto; padding: 0 1rem; }
+    </style>
+</head>
+<body>
+    <div class="content">
+      ${content}
+    </div>
+</body>
+</html>`;
+    
+    // Create and download file
+    const blob = new Blob([htmlContent], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${documentTitle}.html`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="flex h-screen bg-background text-foreground">
       {/* Document Management Panel */}
@@ -545,13 +714,51 @@ export default function Home() {
               {filteredDocuments.map(doc => (
                 <li 
                   key={doc.id}
-                  onClick={() => loadDocument(doc)}
-                  className="p-2 text-sm rounded hover:bg-muted cursor-pointer"
+                  className="p-2 text-sm rounded hover:bg-muted group relative"
                 >
-                  <div className="font-medium">{doc.title}</div>
-                  <div className="text-xs text-muted-foreground flex justify-between">
-                    <span>Modified: {doc.modifiedAt.toLocaleDateString()}</span>
+                  <div 
+                    onClick={() => loadDocument(doc)}
+                    className="cursor-pointer"
+                  >
+                    <div className="font-medium">{doc.title}</div>
+                    <div className="text-xs text-muted-foreground flex justify-between">
+                      <span>Modified: {doc.modifiedAt.toLocaleDateString()}</span>
+                    </div>
                   </div>
+                  
+                  {/* Delete button and confirmation dialog */}
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setDocumentToDelete(doc);
+                        }}
+                      >
+                        <Trash2 className="h-4 w-4 text-destructive" />
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Delete Document</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Are you sure you want to delete "{doc.title}"? This action cannot be undone.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                          onClick={() => handleDeleteDocument(doc)}
+                        >
+                          Delete
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </li>
               ))}
             </ul>
@@ -593,10 +800,52 @@ export default function Home() {
               <Save className="h-4 w-4 mr-2" />
               Save
             </Button>
-            <Button variant="outline" size="sm">
-              <Download className="h-4 w-4 mr-2" />
-              Export
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <Download className="h-4 w-4 mr-2" />
+                  Export
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem 
+                  onClick={exportAsPDF}
+                  disabled={isExporting}
+                >
+                  {isExporting ? (
+                    <>
+                      <div className="animate-spin mr-2 h-4 w-4 border-2 border-current border-t-transparent rounded-full" />
+                      Generating PDF...
+                    </>
+                  ) : (
+                    <>
+                      <FileDown className="h-4 w-4 mr-2" />
+                      Export as PDF
+                    </>
+                  )}
+                </DropdownMenuItem>
+                <DropdownMenuItem 
+                  onClick={() => exportAsMarkdown()}
+                  disabled={isExporting}
+                >
+                  {isExporting ? (
+                    <>
+                      <div className="animate-spin mr-2 h-4 w-4 border-2 border-current border-t-transparent rounded-full" />
+                      Generating Markdown...
+                    </>
+                  ) : (
+                    <>
+                      <FileTextIcon className="h-4 w-4 mr-2" />
+                      Export as Markdown
+                    </>
+                  )}
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={exportAsHTML}>
+                  <FileCode className="h-4 w-4 mr-2" />
+                  Export as HTML
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <Button variant="outline" size="icon" onClick={() => setSettingsOpen(true)}>
               <SettingsIcon className="h-4 w-4" />
             </Button>

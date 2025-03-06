@@ -173,3 +173,12 @@
   background-color: rgba(var(--selection-color), 0.3);
   color: inherit;
 }
+
+/* Add these styles for delete button interactions */
+.group:hover .opacity-0 {
+  opacity: 1;
+}
+
+.group .opacity-0 {
+  transition: opacity 0.2s ease-in-out;
+}
