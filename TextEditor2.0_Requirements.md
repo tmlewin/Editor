@@ -194,3 +194,6 @@ The current flat structure will be reorganized into the following:
 ## Conclusion
 
 This upgrade transforms the basic TextEditor into a professional-grade text editing solution with modern technologies, an intuitive user interface, and expanded functionality. By implementing this plan in phases, we can deliver incremental value while building toward a comprehensive text editing experience. 
+
+## To Do
+- [ ] Reafctor the code in src/app/page.tsx , it is too large, , break it down into sub components /files later 
