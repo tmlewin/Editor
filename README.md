@@ -31,6 +31,8 @@ A modern, feature-rich text editor built with Next.js and React that combines po
 - **Keyboard Shortcuts**: Productivity-enhancing shortcuts
 - **Customizable Settings**: Tailor the editor to your preferences
 
+![TextEditor 2.0 Screenshot](screenshots/settingsNvidia.JPG)
+
 ## Getting Started
 
 ### Installation
