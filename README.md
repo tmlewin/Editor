@@ -2,7 +2,7 @@
 
 A modern, feature-rich text editor built with Next.js and React that combines powerful editing capabilities with a clean, intuitive interface.
 
-![TextEditor 2.0 Screenshot](screenshots/texteditor-screenshot.png)
+![TextEditor 2.0 Screenshot](screenshots/nvidia.JPG)
 
 ## Features
 
