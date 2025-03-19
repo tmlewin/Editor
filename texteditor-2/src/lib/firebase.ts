@@ -6,13 +6,13 @@ import { getAnalytics } from "firebase/analytics";
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
-  apiKey: "AIzaSyCBycacqDrZDF2fwUTW-i_MIxToRDfZdaU",
-  authDomain: "disney-f0465.firebaseapp.com",
-  projectId: "disney-f0465",
-  storageBucket: "disney-f0465.firebasestorage.app",
-  messagingSenderId: "882131124902",
-  appId: "1:882131124902:web:3176a466ae927c784e2a67",
-  measurementId: "G-LJTPNJFEJB"
+  apiKey: "",
+  authDomain: "",
+  projectId: "",
+  storageBucket: "",
+  messagingSenderId: "",
+  appId: "",
+  measurementId: ""
 };
 
 // Initialize Firebase
