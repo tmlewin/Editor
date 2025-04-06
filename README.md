@@ -33,7 +33,7 @@
     </tr>
     <tr>
       <td align="center">
-        <img src="/screenshots/editor2.JPG" alt="Table Editing" width="400"/>
+        <img src="/screenshots/table.JPG" alt="Table Editing" width="400"/>
         <br/>
         <em>Advanced Table Editing</em>
       </td>
