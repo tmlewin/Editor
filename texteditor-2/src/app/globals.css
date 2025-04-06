@@ -132,12 +132,12 @@
     list-style-type: disc;
     margin-left: 1.5em;
   }
-  
+
   ol {
     list-style-type: decimal;
     margin-left: 1.5em;
   }
-  
+
   li {
     margin: 0.5em 0;
   }
@@ -145,26 +145,93 @@
 
 /* Syntax highlighting styles */
 [contenteditable="true"], .preview-content {
+  /* Light mode colors */
   .syntax-tag {
     color: #569cd6;
   }
-  
+
+  .syntax-attr {
+    color: #9cdcfe;
+  }
+
   .syntax-keyword {
     color: #c586c0;
   }
-  
+
   .syntax-string {
     color: #ce9178;
   }
-  
+
   .syntax-number {
     color: #b5cea8;
   }
-  
+
   .syntax-comment {
     color: #6a9955;
     font-style: italic;
   }
+
+  .syntax-function {
+    color: #dcdcaa;
+  }
+
+  .syntax-decorator {
+    color: #4ec9b0;
+  }
+}
+
+/* Dark mode syntax highlighting */
+.dark [contenteditable="true"], .dark .preview-content {
+  .syntax-tag {
+    color: #4ec9b0;
+  }
+
+  .syntax-attr {
+    color: #9cdcfe;
+  }
+
+  .syntax-keyword {
+    color: #c586c0;
+  }
+
+  .syntax-string {
+    color: #ce9178;
+  }
+
+  .syntax-number {
+    color: #b5cea8;
+  }
+
+  .syntax-comment {
+    color: #6a9955;
+    font-style: italic;
+  }
+
+  .syntax-function {
+    color: #dcdcaa;
+  }
+
+  .syntax-decorator {
+    color: #569cd6;
+  }
+}
+
+/* Styling for syntax highlighted content */
+.syntax-highlighted {
+  font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+  line-height: 1.5;
+  tab-size: 2;
+}
+
+/* Add a subtle background for code blocks in both light and dark modes */
+.syntax-highlighted {
+  background-color: #f5f5f5;
+  border-radius: 4px;
+  padding: 1rem;
+}
+
+.dark .syntax-highlighted {
+  background-color: #1e1e1e;
 }
 
 /* Ensure syntax highlighting works with selection */
@@ -172,4 +239,74 @@
 .preview-content *::selection {
   background-color: rgba(var(--selection-color), 0.3);
   color: inherit;
+}
+
+/* Add these styles for delete button interactions */
+.group:hover .opacity-0 {
+  opacity: 1;
+}
+
+.group .opacity-0 {
+  transition: opacity 0.2s ease-in-out;
+}
+
+/* Custom editor styles */
+
+/* Superscript and subscript styles */
+.align-super {
+  vertical-align: super;
+  font-size: 0.75em;
+  line-height: 0;
+}
+
+.align-sub {
+  vertical-align: sub;
+  font-size: 0.75em;
+  line-height: 0;
+}
+
+/* Highlight styles */
+.highlight {
+  background-color: #ffff00;
+  padding: 0 2px;
+}
+
+/* Horizontal rule styles */
+[contenteditable="true"] hr, .preview-content hr {
+  border: none;
+  height: 2px;
+  background-color: var(--border);
+  margin: 1.5rem 0;
+}
+
+/* Blockquote styles */
+[contenteditable="true"] blockquote, .preview-content blockquote {
+  border-left: 4px solid var(--border);
+  padding-left: 1rem;
+  margin-left: 0;
+  margin-right: 0;
+  font-style: italic;
+  color: var(--muted-foreground);
+}
+
+/* Table styles */
+[contenteditable="true"] table, .preview-content table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1rem 0;
+}
+
+[contenteditable="true"] th,
+[contenteditable="true"] td,
+.preview-content th,
+.preview-content td {
+  border: 1px solid var(--border);
+  padding: 8px;
+}
+
+[contenteditable="true"] th,
+.preview-content th {
+  background-color: var(--muted);
+  text-align: left;
+  font-weight: bold;
 }

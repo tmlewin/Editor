@@ -82,7 +82,7 @@ export default function Home() {
     try {
       await DocumentService.saveDocument(newDocument, updatedDocuments);
       setSyncStatus('synced');
-    } catch (error: unknown) {
+    } catch (error) {
       console.error("Error creating new document:", error);
       setSyncStatus('offline');
     }
@@ -120,7 +120,7 @@ export default function Home() {
           // Save mock documents to both storages
           await DocumentService.saveDocuments(mockDocuments);
         }
-      } catch (error: unknown) {
+      } catch (error) {
         console.error('Error loading documents:', error);
         // If loading from Firestore fails, try localStorage
         const localDocs = DocumentService.loadFromLocalStorage();
@@ -188,7 +188,7 @@ export default function Home() {
         console.log("Created new document:", newDocument.title);
         setSyncStatus('synced');
       }
-    } catch (error: unknown) {
+    } catch (error) {
       console.error("Error saving document:", error);
       setSyncStatus('offline');
       // Even if Firestore save fails, we still have the document in local storage
@@ -266,7 +266,7 @@ export default function Home() {
       }
 
       setSyncStatus('synced');
-    } catch (error: unknown) {
+    } catch (error) {
       console.error("Error deleting document:", error);
       setSyncStatus('offline');
 
@@ -367,11 +367,10 @@ export default function Home() {
       // Restore original content
       setContent(prevContent);
 
-    } catch (error: unknown) {
+    } catch (error) {
       console.error('Error preparing document for PDF export:', error);
       setContent(prevContent);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      alert(`PDF export failed: ${errorMessage}`);
+      alert(`PDF export failed: ${error.message || 'Unknown error'}`);
     }
   };
 
@@ -394,10 +393,9 @@ export default function Home() {
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-    } catch (error: unknown) {
+    } catch (error) {
       console.error('Error exporting to Markdown:', error);
-      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      alert(`Failed to export as Markdown: ${errorMessage}`);
+      alert(`Failed to export as Markdown: ${error.message || 'Unknown error'}`);
     }
   };
 
@@ -458,7 +456,7 @@ export default function Home() {
           setContent(updatedCurrentDoc.content);
         }
       }
-    } catch (error: unknown) {
+    } catch (error) {
       console.error("Error syncing with Firestore:", error);
       setSyncStatus('offline');
     }
@@ -500,7 +498,7 @@ export default function Home() {
       await DocumentService.saveDocument(updatedDoc, updatedDocuments);
 
       setSyncStatus('synced');
-    } catch (error: unknown) {
+    } catch (error) {
       console.error("Error updating document tags:", error);
       setSyncStatus('offline');
     }
